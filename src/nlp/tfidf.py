@@ -19,7 +19,7 @@ def compute_idf(corpus):
         for word in set(doc_tokens):
             df_dict[word] = df_dict.get(word, 0) + 1
 
-    # Aplicamos la fórmula Smoothed IDF de sklearn para evitar negativos
+    # Se aplica la formula de Smoothed IDF de sklearn para evitar negativos
     for word, df in df_dict.items():
         idf_dict[word] = math.log((total_docs + 1) / (df + 1)) + 1.0
 
@@ -35,7 +35,7 @@ def generate_tfidf_vectors(corpus):
         tf = compute_tf(doc)
         vector_doc = []
 
-        # 1. Calculamos el TF-IDF crudo
+
         for word in vocabulario:
             if word in tf:
                 valor_tfidf = tf[word] * idf.get(word, 0.0)
@@ -44,8 +44,8 @@ def generate_tfidf_vectors(corpus):
 
             vector_doc.append(valor_tfidf)
 
-        # 2. Aplicamos Normalización L2 (Obligatorio para replicar sklearn)
-        # Esto asegura que todos los vectores tengan la misma escala geométrica
+        # 2. Normalización L2 
+
         norma = math.sqrt(sum(v ** 2 for v in vector_doc))
         if norma > 0:
             vector_doc = [v / norma for v in vector_doc]
@@ -85,22 +85,22 @@ def vectorize_new_phrase(phrase_tokens, vocabulario_global, idf_global):
     """
     Convierte una frase nueva en un vector TF-IDF compatible con el corpus original.
     """
-    # 1. Calculamos el TF de tu frase
+
     tf = compute_tf(phrase_tokens)
     vector_frase = []
 
-    # 2. Mapeamos tu frase usando el vocabulario estricto de la Biblia
+
     for word in vocabulario_global:
         if word in tf:
-            # Si usaste la palabra y existe en la Biblia, calculamos su peso
+
             valor_tfidf = tf[word] * idf_global.get(word, 0.0)
         else:
-            # Si la palabra no está en tu frase, o no existe en la Biblia, es 0
+
             valor_tfidf = 0.0
 
         vector_frase.append(valor_tfidf)
 
-    # 3. Normalización L2 obligatoria para que la similitud del coseno funcione
+    # normalizacion l2
     norma = math.sqrt(sum(v ** 2 for v in vector_frase))
     if norma > 0:
         vector_frase = [v / norma for v in vector_frase]
